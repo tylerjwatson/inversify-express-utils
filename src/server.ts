@@ -135,9 +135,11 @@ export class InversifyExpressServer  {
     }
 
     private handlerFactory(controllerName: any, key: string, parameterMetadata: interfaces.ParameterMetadata[]): express.RequestHandler {
+        const controller = this._container.getNamed(TYPE.Controller, controllerName);
+
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             let args = this.extractParameters(req, res, next, parameterMetadata);
-            let result: any = this._container.getNamed(TYPE.Controller, controllerName)[key](...args);
+            let result: any = controller[key](...args);
             Promise.resolve(result)
                 .then((value: any) => {
                     if (value && !res.headersSent) {
